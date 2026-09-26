@@ -48,24 +48,23 @@ val downloadPylaModels = tasks.register("downloadPylaModels") {
     group = "pyla"
     description = "Downloads the pinned upstream PylaAI ONNX models into app assets."
     doLast {
-        data class ModelSpec(val url: String, val bytes: Long)
         val revision = "203aab8556fb9e957eeac6df74f761cc1dc918d5"
         val base = "https://raw.githubusercontent.com/PylaAI/PylaAI/$revision/models"
         val models = mapOf(
-            "mainInGameModel.onnx" to ModelSpec("$base/mainInGameModel.onnx", 10_585_057L),
-            "closeTileDetector.onnx" to ModelSpec("$base/closeTileDetector.onnx", 10_606_119L),
-            "tileDetector.onnx" to ModelSpec("$base/tileDetector.onnx", 10_606_102L)
+            "mainInGameModel.onnx" to 10_585_057L,
+            "closeTileDetector.onnx" to 10_606_119L,
+            "tileDetector.onnx" to 10_606_102L
         )
         val dir = file("src/main/assets/models")
         dir.mkdirs()
 
-        models.forEach { (name, spec) ->
+        models.forEach { (name, expectedBytes) ->
             val out = dir.resolve(name)
-            if (!out.exists() || out.length() != spec.bytes) {
+            if (!out.exists() || out.length() != expectedBytes) {
                 logger.lifecycle("Downloading pinned PylaAI model: $name")
                 val tmp = dir.resolve("$name.part")
                 if (tmp.exists()) tmp.delete()
-                val connection = URI(spec.url).toURL().openConnection().apply {
+                val connection = URI("$base/$name").toURL().openConnection().apply {
                     connectTimeout = 20_000
                     readTimeout = 120_000
                     setRequestProperty("User-Agent", "BrawlAI-Gradle")
@@ -73,8 +72,8 @@ val downloadPylaModels = tasks.register("downloadPylaModels") {
                 connection.getInputStream().use { input ->
                     tmp.outputStream().use { output -> input.copyTo(output) }
                 }
-                check(tmp.length() == spec.bytes) {
-                    "Model $name has unexpected size ${tmp.length()} (expected ${spec.bytes})"
+                check(tmp.length() == expectedBytes) {
+                    "Model $name has unexpected size ${tmp.length()} (expected $expectedBytes)"
                 }
                 if (out.exists()) out.delete()
                 check(tmp.renameTo(out)) { "Could not move $tmp to $out" }
