@@ -1,3 +1,5 @@
+import java.net.URI
+
 plugins {
     id("com.android.application")
 }
@@ -42,7 +44,7 @@ dependencies {
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.30.0")
 }
 
-val downloadPylaModels by tasks.registering {
+val downloadPylaModels = tasks.register("downloadPylaModels") {
     group = "pyla"
     description = "Downloads the pinned upstream PylaAI ONNX models into app assets."
     doLast {
@@ -63,7 +65,7 @@ val downloadPylaModels by tasks.registering {
                 logger.lifecycle("Downloading pinned PylaAI model: $name")
                 val tmp = dir.resolve("$name.part")
                 if (tmp.exists()) tmp.delete()
-                val connection = java.net.URI(spec.url).toURL().openConnection().apply {
+                val connection = URI(spec.url).toURL().openConnection().apply {
                     connectTimeout = 20_000
                     readTimeout = 120_000
                     setRequestProperty("User-Agent", "BrawlAI-Gradle")
