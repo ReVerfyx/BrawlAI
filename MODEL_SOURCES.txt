@@ -1,0 +1,13 @@
+Pinned upstream repository:
+https://github.com/PylaAI/PylaAI
+
+Pinned revision:
+203aab8556fb9e957eeac6df74f761cc1dc918d5
+
+Models downloaded during Gradle preBuild:
+models/mainInGameModel.onnx     10585057 bytes
+models/closeTileDetector.onnx   10606119 bytes
+models/tileDetector.onnx        10606102 bytes
+
+License: CC BY-NC 4.0
+https://creativecommons.org/licenses/by-nc/4.0/

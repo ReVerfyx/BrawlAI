@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BrawlAI</string>
+    <string name="accessibility_desc">Allows BrawlAI to send joystick and attack gestures while Brawl Stars is open.</string>
+</resources>
